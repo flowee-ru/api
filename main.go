@@ -17,7 +17,7 @@ func main() {
 		port = os.Getenv("PORT")
 	}
 
-	http.HandleFunc("/", routes.Login)
+	http.HandleFunc(os.Getenv("BASE_PATH") + "auth/login", routes.Login)
 
 	log.Println("Starting server on port " + port)
 	http.ListenAndServe(":" + port, nil)
