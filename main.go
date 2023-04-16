@@ -43,6 +43,12 @@ func main() {
 	http.HandleFunc(basePath + "/auth/verifyAccount", func(w http.ResponseWriter, r *http.Request) {
 		routes.VerifyAccount(w, r, db, ctx)
 	})
+	http.HandleFunc(basePath + "/auth/verifyToken", func(w http.ResponseWriter, r *http.Request) {
+		routes.VerifyToken(w, r, db, ctx)
+	})
+	http.HandleFunc(basePath + "/auth/resendEmail", func(w http.ResponseWriter, r *http.Request) {
+		routes.ResendEmail(w, r, db, ctx)
+	})
 
 	log.Println("Starting server on port " + port)
 	http.ListenAndServe(":" + port, nil)

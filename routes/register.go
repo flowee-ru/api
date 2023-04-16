@@ -56,7 +56,7 @@ func Register(w http.ResponseWriter, r *http.Request, db *mongo.Database, ctx co
 	}
 
 	verifyToken := utils.GenerateToken(10)
-	verifyLink := os.Getenv("WS_HOST") + "/verify?c=" + verifyToken
+	verifyLink := os.Getenv("APP_HOST") + "/verify?c=" + verifyToken
 
 	mail := gomail.NewMessage()
 	mail.SetHeader("From", os.Getenv("SMTP_USER"))
@@ -78,10 +78,11 @@ func Register(w http.ResponseWriter, r *http.Request, db *mongo.Database, ctx co
 	db.Collection("accounts").InsertOne(ctx, types.Account{
 		ID: primitive.NewObjectID(),
 		Username: username,
-		Email: email,
 		Password: string(hash),
+		Email: email,
 		Timestamp: int32(time.Now().Unix()),
 		LastStream: 0,
+		LastEmailSend: 0,
 		Token: utils.GenerateToken(30),
 		VerifyToken: verifyToken,
 		StreamToken: utils.GenerateToken(30),
