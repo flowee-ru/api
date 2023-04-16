@@ -54,6 +54,9 @@ func main() {
 	http.HandleFunc(basePath + "/actions/follow", func(w http.ResponseWriter, r *http.Request) {
 		routes.Follow(w, r, db, ctx)
 	})
+	http.HandleFunc(basePath + "/actions/unfollow", func(w http.ResponseWriter, r *http.Request) {
+		routes.Unfollow(w, r, db, ctx)
+	})
 
 	log.Println("Starting server on port " + port)
 	http.ListenAndServe(":" + port, nil)

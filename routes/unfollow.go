@@ -2,18 +2,16 @@ package routes
 
 import (
 	"context"
-	"flowee-api/types"
 	"flowee-api/utils"
 	"fmt"
 	"net/http"
-	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func Follow(w http.ResponseWriter, r *http.Request, db *mongo.Database, ctx context.Context) {
+func Unfollow(w http.ResponseWriter, r *http.Request, db *mongo.Database, ctx context.Context) {
 	if r.Method != http.MethodPost {
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		fmt.Fprintf(w, `{"success": false}`)
@@ -43,16 +41,14 @@ func Follow(w http.ResponseWriter, r *http.Request, db *mongo.Database, ctx cont
 		primitive.E{Key: "user1", Value: account.ID},
 		primitive.E{Key: "user2", Value: accountID},
 	}).Decode(nil)
-	if err != mongo.ErrNoDocuments {
+	if err == mongo.ErrNoDocuments {
 		fmt.Fprintf(w, `{"success": true}`)
 		return
 	}
 
-	db.Collection("follows").InsertOne(ctx, types.Follow{
-		ID: primitive.NewObjectID(),
-		User1: account.ID,
-		User2: accountID,
-		Timestamp: int32(time.Now().Unix()),
+	db.Collection("follows").DeleteOne(ctx, bson.D{
+		primitive.E{Key: "user1", Value: account.ID},
+		primitive.E{Key: "user2", Value: accountID},
 	})
 
 	fmt.Fprintf(w, `{"success": true}`)
