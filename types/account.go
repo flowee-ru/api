@@ -7,8 +7,10 @@ type Account struct {
 	Username    string             `bson:"username"`
 	Password    string             `bson:"passsword"`
 	Email       string             `bson:"email"`
-	Timestamp   int                `bson:"timestamp"`
+	Timestamp   int32              `bson:"timestamp"`
+	LastStream  int32              `bson:"lastStream"`
 	Token       string             `bson:"token"`
 	StreamToken string             `bson:"streamToken"`
 	StreamName  string             `bson:"streamName"`
+	IsAcive     bool               `bson:"isActive"`
 }

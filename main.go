@@ -33,8 +33,12 @@ func main() {
 		log.Fatalln(err)
 	}
 
+	// auth
 	http.HandleFunc(basePath + "/auth/login", func(w http.ResponseWriter, r *http.Request) {
-		routes.Login(w, r, db)
+		routes.Login(w, r, db, ctx)
+	})
+	http.HandleFunc(basePath + "/auth/register", func(w http.ResponseWriter, r *http.Request) {
+		routes.Register(w, r, db, ctx)
 	})
 
 	log.Println("Starting server on port " + port)

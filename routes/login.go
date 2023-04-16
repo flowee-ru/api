@@ -2,10 +2,10 @@ package routes
 
 import (
 	"context"
-	"flowee-api/types"
 	"fmt"
 	"log"
 	"net/http"
+	"flowee-api/types"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -13,9 +13,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-var ctx = context.TODO()
-
-func Login(w http.ResponseWriter, r *http.Request, db *mongo.Database) {
+func Login(w http.ResponseWriter, r *http.Request, db *mongo.Database, ctx context.Context) {
 	if r.Method != http.MethodPost {
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		fmt.Fprintf(w, `{"success": false}`)
@@ -46,6 +44,6 @@ func Login(w http.ResponseWriter, r *http.Request, db *mongo.Database) {
 		return
 	}
 
-	log.Printf("%s logged in", r.FormValue("username"))
+	log.Printf("%s logged in", username)
 	fmt.Fprintf(w, `{"success": true, "token": "%s"}`, account.Token)
 }
