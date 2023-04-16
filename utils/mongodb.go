@@ -8,7 +8,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func ConnectMongo() (*mongo.Database, error) {
+func ConnectMongo(ctx context.Context) (*mongo.Database, error) {
 	mongoUri := "mongodb://localhost:27017"
 	if os.Getenv("MONGO_URI") != "" {
 		mongoUri = os.Getenv("MONGO_URI")
@@ -20,8 +20,12 @@ func ConnectMongo() (*mongo.Database, error) {
 	}
 
 	clientOptions := options.Client().ApplyURI(mongoUri)
+	client, err := mongo.Connect(ctx, clientOptions)
+	if err != nil {
+		return nil, err
+	}
 
-	client, err := mongo.Connect(context.TODO(), clientOptions)
+	err = client.Ping(ctx, nil)
 	if err != nil {
 		return nil, err
 	}
