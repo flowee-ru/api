@@ -3,7 +3,6 @@ package routes
 import (
 	"context"
 	"fmt"
-	"log"
 	"net/http"
 	"flowee-api/types"
 
@@ -44,6 +43,5 @@ func Login(w http.ResponseWriter, r *http.Request, db *mongo.Database, ctx conte
 		return
 	}
 
-	log.Printf("%s logged in", username)
 	fmt.Fprintf(w, `{"success": true, "token": "%s"}`, account.Token)
 }

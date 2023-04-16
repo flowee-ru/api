@@ -17,15 +17,15 @@ func main() {
 	godotenv.Load()
 
 	port := "8000"
-	if os.Getenv("PORT") != "" {
-		port = os.Getenv("PORT")
+	if os.Getenv("WS_PORT") != "" {
+		port = os.Getenv("WS_PORT")
 	}
 
 	basePath := "/api"
-	if os.Getenv("BASE_PATH") == "/" {
+	if os.Getenv("WS_BASE_PATH") == "/" {
 		basePath = ""
-	} else if os.Getenv("BASE_PATH") != "" {
-		basePath = os.Getenv("BASE_PATH")
+	} else if os.Getenv("WS_BASE_PATH") != "" {
+		basePath = os.Getenv("WS_BASE_PATH")
 	}
 
 	db, err := utils.ConnectMongo(ctx)

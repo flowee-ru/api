@@ -5,14 +5,16 @@ import (
 	"flowee-api/types"
 	"flowee-api/utils"
 	"fmt"
-	"log"
 	"net/http"
+	"os"
+	"strconv"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"golang.org/x/crypto/bcrypt"
+	"gopkg.in/gomail.v2"
 )
 
 func Register(w http.ResponseWriter, r *http.Request, db *mongo.Database, ctx context.Context) {
@@ -53,6 +55,24 @@ func Register(w http.ResponseWriter, r *http.Request, db *mongo.Database, ctx co
 		return
 	}
 
+	verifyToken := utils.GenerateToken(10)
+	verifyLink := os.Getenv("WS_HOST") + "/verify?c=" + verifyToken
+
+	mail := gomail.NewMessage()
+	mail.SetHeader("From", os.Getenv("SMTP_USER"))
+	mail.SetHeader("To", email)
+	mail.SetHeader("Subject", "Verify your account on Flowee")
+	mail.SetBody("text/html", `<div align="center">Hello ` + username + `! Please follow this link to activate your account on Flowee:<br><a href="` + verifyLink + `">` + verifyLink + `</div>`)
+
+	smtpPort, _ := strconv.Atoi(os.Getenv("SMTP_PORT"))
+	dialer := gomail.NewDialer(os.Getenv("SMTP_HOST"), smtpPort, os.Getenv("SMTP_USER"), os.Getenv("SMTP_PASSWORD"))
+
+	err = dialer.DialAndSend(mail)
+	if err != nil {
+		fmt.Fprintf(w, `{"success": false, "errorCode": 4}`)
+		return
+	}
+
 	hash, _ := bcrypt.GenerateFromPassword([]byte(password), 10)
 
 	db.Collection("accounts").InsertOne(ctx, types.Account{
@@ -62,12 +82,12 @@ func Register(w http.ResponseWriter, r *http.Request, db *mongo.Database, ctx co
 		Password: string(hash),
 		Timestamp: int32(time.Now().Unix()),
 		LastStream: 0,
-		Token: utils.GenerateToken(),
-		StreamToken: utils.GenerateToken(),
+		Token: utils.GenerateToken(30),
+		VerifyToken: verifyToken,
+		StreamToken: utils.GenerateToken(30),
 		StreamName: username + "'s stream",
 		IsAcive: false,
 	})
 
-	log.Printf("%s registered", username)
 	fmt.Fprintf(w, `{"success": true}`)
 }
