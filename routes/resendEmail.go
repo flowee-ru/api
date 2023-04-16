@@ -44,7 +44,7 @@ func ResendEmail(w http.ResponseWriter, r *http.Request, db *mongo.Database, ctx
 		return
 	}
 
-	verifyLink := os.Getenv("APP_HOST") + "/verify?c=" + account.VerifyToken
+	verifyLink := os.Getenv("APP_HOST") + "/verify?token=" + account.VerifyToken
 
 	mail := gomail.NewMessage()
 	mail.SetHeader("From", os.Getenv("SMTP_USER"))

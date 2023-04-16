@@ -56,7 +56,7 @@ func Register(w http.ResponseWriter, r *http.Request, db *mongo.Database, ctx co
 	}
 
 	verifyToken := utils.GenerateToken(10)
-	verifyLink := os.Getenv("APP_HOST") + "/verify?c=" + verifyToken
+	verifyLink := os.Getenv("APP_HOST") + "/verify?token=" + verifyToken
 
 	mail := gomail.NewMessage()
 	mail.SetHeader("From", os.Getenv("SMTP_USER"))
