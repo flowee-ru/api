@@ -40,6 +40,9 @@ func main() {
 	http.HandleFunc(basePath + "/auth/register", func(w http.ResponseWriter, r *http.Request) {
 		routes.Register(w, r, db, ctx)
 	})
+	http.HandleFunc(basePath + "/auth/verifyAccount", func(w http.ResponseWriter, r *http.Request) {
+		routes.VerifyAccount(w, r, db, ctx)
+	})
 
 	log.Println("Starting server on port " + port)
 	http.ListenAndServe(":" + port, nil)
