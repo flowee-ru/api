@@ -50,6 +50,11 @@ func main() {
 		routes.ResendEmail(w, r, db, ctx)
 	})
 
+	// actions
+	http.HandleFunc(basePath + "/actions/follow", func(w http.ResponseWriter, r *http.Request) {
+		routes.Follow(w, r, db, ctx)
+	})
+
 	log.Println("Starting server on port " + port)
 	http.ListenAndServe(":" + port, nil)
 }
