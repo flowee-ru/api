@@ -2,31 +2,46 @@ package main
 
 import (
 	"context"
-	"flowee-api/routes"
-	"flowee-api/utils"
 	"log"
 	"net/http"
 	"os"
 
+	"github.com/flowee-ru/flowee-api/routes"
+	"github.com/flowee-ru/flowee-api/utils"
+	"github.com/flowee-ru/flowee-api/events"
 	"github.com/gorilla/mux"
+	"github.com/gorilla/websocket"
 	"github.com/joho/godotenv"
 )
 
 var ctx = context.TODO()
 
+var wsUpgrader = websocket.Upgrader{
+	CheckOrigin: func(r *http.Request) bool {
+		return true
+	},
+}
+
 func main() {
 	godotenv.Load()
 
 	port := "8000"
-	if os.Getenv("WS_PORT") != "" {
-		port = os.Getenv("WS_PORT")
+	if os.Getenv("PORT") != "" {
+		port = os.Getenv("PORT")
 	}
 
 	basePath := "/api"
-	if os.Getenv("WS_BASE_PATH") == "/" {
+	if os.Getenv("API_BASE_PATH") == "/" {
 		basePath = ""
-	} else if os.Getenv("WS_BASE_PATH") != "" {
-		basePath = os.Getenv("WS_BASE_PATH")
+	} else if os.Getenv("API_BASE_PATH") != "" {
+		basePath = os.Getenv("API_BASE_PATH")
+	}
+
+	wsPath := "/ws"
+	if os.Getenv("WS_PATH") == "/" {
+		wsPath = ""
+	} else if os.Getenv("WS_PATH") != "" {
+		wsPath = os.Getenv("WS_PATH")
 	}
 
 	db, err := utils.ConnectMongo(ctx)
@@ -59,6 +74,11 @@ func main() {
 	})
 	router.HandleFunc(basePath + "/actions/unfollow", func(w http.ResponseWriter, r *http.Request) {
 		routes.Unfollow(w, r, db, ctx)
+	})
+
+	// websocket events
+	router.HandleFunc(wsPath, func(w http.ResponseWriter, r *http.Request) {
+		events.Ws(wsUpgrader, w, r)
 	})
 
 	http.Handle("/", router)

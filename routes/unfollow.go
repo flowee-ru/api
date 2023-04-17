@@ -2,10 +2,10 @@ package routes
 
 import (
 	"context"
-	"flowee-api/utils"
 	"fmt"
 	"net/http"
 
+	"github.com/flowee-ru/flowee-api/utils"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
