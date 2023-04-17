@@ -76,6 +76,11 @@ func main() {
 		routes.Unfollow(w, r, db, ctx)
 	})
 
+	// chat
+	router.HandleFunc(basePath + "/chat/sendMessage", func(w http.ResponseWriter, r *http.Request) {
+		routes.ChatSendMessage(w, r, db, ctx)
+	})
+
 	// websocket events
 	router.HandleFunc(wsPath, func(w http.ResponseWriter, r *http.Request) {
 		events.Ws(wsUpgrader, w, r)
