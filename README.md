@@ -1,2 +1,2 @@
 # api
-Flowee REST and websocket API
+Flowee HTTP and websocket API
