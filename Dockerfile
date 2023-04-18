@@ -10,7 +10,7 @@ RUN go mod download
 COPY . .
 
 # build
-RUN go build -o flowee_api
+RUN CGO_ENABLED=0 GOOS=linux go build -o flowee_api
 
 EXPOSE 8000
 
