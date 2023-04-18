@@ -7,12 +7,12 @@ COPY go.mod go.sum ./
 RUN go mod download
 
 # copy files
-COPY ./**/*.go .
+COPY . .
 
 # build
-RUN go build -o /flowee_api
+RUN go build -o flowee_api
 
 EXPOSE 8000
 
 # run
-CMD ["/flowee_api"]
+CMD ["flowee_api"]
