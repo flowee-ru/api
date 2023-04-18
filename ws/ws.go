@@ -1,9 +1,7 @@
-package events
+package ws
 
 import (
-	"encoding/base64"
 	"net/http"
-	"strconv"
 
 	"github.com/gorilla/websocket"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -31,17 +29,6 @@ func Ws(upgrader websocket.Upgrader, w http.ResponseWriter, r *http.Request) {
 		msgType, _, err := conn.ReadMessage()
 		if err != nil || msgType == websocket.CloseMessage {
 			break
-		}
-	}
-}
-
-func OnChatMessage(timestamp int, authorName string, content string, stream primitive.ObjectID) {
-	for _, s := range clients {
-		if s == stream {
-			authorName = base64.StdEncoding.EncodeToString([]byte(authorName))
-			content = base64.StdEncoding.EncodeToString([]byte(content))
-
-			conn.WriteMessage(websocket.TextMessage, []byte(strconv.Itoa(timestamp) + "|" + authorName + "|" + content))
 		}
 	}
 }

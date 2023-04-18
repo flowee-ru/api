@@ -8,7 +8,7 @@ import (
 
 	"github.com/flowee-ru/flowee-api/routes"
 	"github.com/flowee-ru/flowee-api/utils"
-	"github.com/flowee-ru/flowee-api/events"
+	"github.com/flowee-ru/flowee-api/ws"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
 	"github.com/joho/godotenv"
@@ -83,7 +83,7 @@ func main() {
 
 	// websocket events
 	router.HandleFunc(wsPath, func(w http.ResponseWriter, r *http.Request) {
-		events.Ws(wsUpgrader, w, r)
+		ws.Ws(wsUpgrader, w, r)
 	})
 
 	http.Handle("/", router)

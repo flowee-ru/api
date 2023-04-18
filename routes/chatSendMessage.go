@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/flowee-ru/flowee-api/events"
+	"github.com/flowee-ru/flowee-api/ws"
 	"github.com/flowee-ru/flowee-api/utils"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -39,7 +39,7 @@ func ChatSendMessage(w http.ResponseWriter, r *http.Request, db *mongo.Database,
 
 	w.Header().Set("Content-Type", "application/json")
 
-	events.OnChatMessage(int(time.Now().Unix()), acc.Username, content, streamID)
+	ws.OnChatMessage(int(time.Now().Unix()), acc.Username, content, streamID)
 
 	fmt.Fprintf(w, `{"success": true}`)
 }
