@@ -29,8 +29,6 @@ func Unfollow(w http.ResponseWriter, r *http.Request, db *mongo.Database, ctx co
 
 	accountID, _ := primitive.ObjectIDFromHex(targetIDHex)
 
-	w.Header().Set("Content-Type", "application/json")
-
 	account, err := utils.GetAccountFromToken(ctx, db, token)
 	if err == mongo.ErrNoDocuments {
 		fmt.Fprintf(w, `{"success": false, "errorCode": 1}`)

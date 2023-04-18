@@ -26,8 +26,6 @@ func VerifyAccount(w http.ResponseWriter, r *http.Request, db *mongo.Database, c
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-
 	var account types.Account
 	err := db.Collection("accounts").FindOne(ctx, bson.D{primitive.E{Key: "verifyToken", Value: token}, primitive.E{Key: "isActive", Value: false}}).Decode(&account)
 	if err == mongo.ErrNoDocuments {

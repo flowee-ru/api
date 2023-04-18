@@ -35,23 +35,26 @@ func Register(w http.ResponseWriter, r *http.Request, db *mongo.Database, ctx co
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
+	if len(username) < 3 || len(username) > 15 {
+		fmt.Fprintf(w, `{"success": false, "errorCode": 1}`)
+		return
+	}
 
 	check, err := utils.VerifyCaptcha(captcha)
 	if err != nil || !check {
-		fmt.Fprintf(w, `{"success": false, "errorCode": 1}`)
+		fmt.Fprintf(w, `{"success": false, "errorCode": 2}`)
 		return
 	}
 
 	err = db.Collection("accounts").FindOne(ctx, bson.D{primitive.E{Key: "username", Value: username}}).Decode(nil)
 	if err != mongo.ErrNoDocuments {
-		fmt.Fprintf(w, `{"success": false, "errorCode": 2}`)
+		fmt.Fprintf(w, `{"success": false, "errorCode": 3}`)
 		return
 	}
 
 	err = db.Collection("accounts").FindOne(ctx, bson.D{primitive.E{Key: "email", Value: email}}).Decode(nil)
 	if err != mongo.ErrNoDocuments {
-		fmt.Fprintf(w, `{"success": false, "errorCode": 3}`)
+		fmt.Fprintf(w, `{"success": false, "errorCode": 4}`)
 		return
 	}
 
@@ -69,7 +72,7 @@ func Register(w http.ResponseWriter, r *http.Request, db *mongo.Database, ctx co
 
 	err = dialer.DialAndSend(mail)
 	if err != nil {
-		fmt.Fprintf(w, `{"success": false, "errorCode": 4}`)
+		fmt.Fprintf(w, `{"success": false, "errorCode": 5}`)
 		return
 	}
 
