@@ -29,7 +29,7 @@ func Login(w http.ResponseWriter, r *http.Request, db *mongo.Database, ctx conte
 	}
 
 	var account types.Account
-	err := db.Collection("accounts").FindOne(ctx, bson.D{primitive.E{Key: "username", Value: username}}).Decode(&account)
+	err := db.Collection("accounts").FindOne(ctx, bson.D{primitive.E{Key: "username", Value: username}, primitive.E{Key: "isActive", Value: true}}).Decode(&account)
 	if err == mongo.ErrNoDocuments {
 		fmt.Fprintf(w, `{"success": false, "errorCode": 1}`)
 		return

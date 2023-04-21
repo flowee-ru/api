@@ -90,6 +90,7 @@ func Register(w http.ResponseWriter, r *http.Request, db *mongo.Database, ctx co
 		VerifyToken: verifyToken,
 		StreamToken: utils.GenerateToken(30),
 		StreamName: username + "'s stream",
+		IsLive: false,
 		IsActive: false,
 	})
 

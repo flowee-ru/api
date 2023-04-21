@@ -54,43 +54,52 @@ func main() {
 	// auth
 	router.HandleFunc(basePath + "/auth/login", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Access-Control-Allow-Origin", "*")
 		routes.Login(w, r, db, ctx)
 	})
 	router.HandleFunc(basePath + "/auth/register", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Access-Control-Allow-Origin", "*")
 		routes.Register(w, r, db, ctx)
 	})
 	router.HandleFunc(basePath + "/auth/verifyAccount", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Access-Control-Allow-Origin", "*")
 		routes.VerifyAccount(w, r, db, ctx)
 	})
 	router.HandleFunc(basePath + "/auth/verifyToken", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Access-Control-Allow-Origin", "*")
 		routes.VerifyToken(w, r, db, ctx)
 	})
 	router.HandleFunc(basePath + "/auth/resendEmail", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Access-Control-Allow-Origin", "*")
 		routes.ResendEmail(w, r, db, ctx)
 	})
 
 	// actions
 	router.HandleFunc(basePath + "/actions/follow", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Access-Control-Allow-Origin", "*")
 		routes.Follow(w, r, db, ctx)
 	})
 	router.HandleFunc(basePath + "/actions/unfollow", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Access-Control-Allow-Origin", "*")
 		routes.Unfollow(w, r, db, ctx)
 	})
 
 	// chat
 	router.HandleFunc(basePath + "/chat/sendMessage", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Access-Control-Allow-Origin", "*")
 		routes.ChatSendMessage(w, r, db, ctx)
 	})
 
 	// websocket events
 	router.HandleFunc(wsPath, func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
 		ws.Ws(wsUpgrader, w, r)
 	})
 

@@ -14,5 +14,6 @@ type Account struct {
 	VerifyToken     string               `bson:"verifyToken"`
 	StreamToken     string               `bson:"streamToken"`
 	StreamName      string               `bson:"streamName"`
-	IsActive         bool                 `bson:"isActive"`
+	IsLive          bool                 `bson:"isLive"`
+	IsActive        bool                 `bson:"isActive"`
 }
