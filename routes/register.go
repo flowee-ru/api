@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/flowee-ru/flowee-api/types"
+	"github.com/flowee-ru/flowee-api/models"
 	"github.com/flowee-ru/flowee-api/utils"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -28,6 +28,11 @@ func Register(w http.ResponseWriter, r *http.Request, db *mongo.Database, ctx co
 	email := r.FormValue("email")
 	password := r.FormValue("password")
 	captcha := r.FormValue("captcha")
+
+	mondayHost := "http://localhost:8089"
+	if os.Getenv("MONDAY_HOST") != "" {
+		mondayHost = os.Getenv("MONDAY_HOST")
+	}
 
 	if username == "" || password == "" || email == "" || captcha == "" {
 		w.WriteHeader(http.StatusBadRequest)
@@ -78,8 +83,10 @@ func Register(w http.ResponseWriter, r *http.Request, db *mongo.Database, ctx co
 
 	hash, _ := bcrypt.GenerateFromPassword([]byte(password), 10)
 
-	db.Collection("accounts").InsertOne(ctx, types.Account{
-		ID: primitive.NewObjectID(),
+	id := primitive.NewObjectID()
+
+	db.Collection("accounts").InsertOne(ctx, models.Account{
+		ID: id,
 		Username: username,
 		Password: string(hash),
 		Email: email,
@@ -90,6 +97,7 @@ func Register(w http.ResponseWriter, r *http.Request, db *mongo.Database, ctx co
 		VerifyToken: verifyToken,
 		StreamToken: utils.GenerateToken(30),
 		StreamName: username + "'s stream",
+		StreamURL: mondayHost + "/" + id.Hex(),
 		IsLive: false,
 		IsActive: false,
 	})

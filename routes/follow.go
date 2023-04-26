@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/flowee-ru/flowee-api/types"
+	"github.com/flowee-ru/flowee-api/models"
 	"github.com/flowee-ru/flowee-api/utils"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -46,7 +46,7 @@ func Follow(w http.ResponseWriter, r *http.Request, db *mongo.Database, ctx cont
 		return
 	}
 
-	db.Collection("follows").InsertOne(ctx, types.Follow{
+	db.Collection("follows").InsertOne(ctx, models.Follow{
 		ID: primitive.NewObjectID(),
 		User1: account.ID,
 		User2: accountID,

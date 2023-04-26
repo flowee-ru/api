@@ -76,6 +76,13 @@ func main() {
 		routes.Unfollow(w, r, db, ctx)
 	})
 
+	// data fetching
+	router.HandleFunc("/users/getInfo", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		routes.GetUserInfo(w, r, db)
+	})
+
 	// chat
 	router.HandleFunc("/chat/sendMessage", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")

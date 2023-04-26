@@ -4,7 +4,7 @@ import (
 	"context"
 	"math/rand"
 
-	"github.com/flowee-ru/flowee-api/types"
+	"github.com/flowee-ru/flowee-api/models"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -19,9 +19,9 @@ func GenerateToken(length int) string {
 	return string(b)
 }
 
-func GetAccountFromToken(ctx context.Context, db *mongo.Database, token string) (*types.Account, error) {
-	var account types.Account
-	err := db.Collection("accounts").FindOne(ctx, bson.D{primitive.E{Key: "token", Value: token}}).Decode(&account)
+func GetAccountFromToken(ctx context.Context, db *mongo.Database, token string) (*models.Account, error) {
+	var account models.Account
+	err := db.Collection("accounts").FindOne(ctx, bson.D{primitive.E{Key: "token", Value: token}, primitive.E{Key: "isActive", Value: true}}).Decode(&account)
 	if err != nil {
 		return nil, err
 	}

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	
-	"github.com/flowee-ru/flowee-api/types"
+	"github.com/flowee-ru/flowee-api/models"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -26,7 +26,7 @@ func VerifyAccount(w http.ResponseWriter, r *http.Request, db *mongo.Database, c
 		return
 	}
 
-	var account types.Account
+	var account models.Account
 	err := db.Collection("accounts").FindOne(ctx, bson.D{primitive.E{Key: "verifyToken", Value: token}, primitive.E{Key: "isActive", Value: false}}).Decode(&account)
 	if err == mongo.ErrNoDocuments {
 		fmt.Fprintf(w, `{"success": false, "errorCode": 1}`)
