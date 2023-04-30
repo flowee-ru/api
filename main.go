@@ -26,8 +26,8 @@ func main() {
 	godotenv.Load()
 
 	port := "8000"
-	if os.Getenv("PORT") != "" {
-		port = os.Getenv("PORT")
+	if os.Getenv("API_PORT") != "" {
+		port = os.Getenv("API_PORT")
 	}
 
 	db, err := utils.ConnectMongo(ctx)

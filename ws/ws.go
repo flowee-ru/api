@@ -17,7 +17,7 @@ func Ws(upgrader websocket.Upgrader, w http.ResponseWriter, r *http.Request) {
 	stream := r.URL.Query().Get("stream")
 
 	if !primitive.IsValidObjectID(stream) || stream == "" {
-		return
+		conn.Close()
 	}
 
 	streamID, _ := primitive.ObjectIDFromHex(stream)
