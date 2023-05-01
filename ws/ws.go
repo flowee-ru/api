@@ -8,10 +8,9 @@ import (
 )
 
 var clients = make(map[*websocket.Conn] primitive.ObjectID)
-var conn *websocket.Conn
 
 func Ws(upgrader websocket.Upgrader, w http.ResponseWriter, r *http.Request) {
-	conn, _ = upgrader.Upgrade(w, r, nil)
+	conn, _ := upgrader.Upgrade(w, r, nil)
 	defer conn.Close()
 
 	stream := r.URL.Query().Get("stream")

@@ -37,7 +37,7 @@ func ChatSendMessage(w http.ResponseWriter, r *http.Request, db *mongo.Database,
 		return
 	}
 
-	ws.OnChatMessage(int(time.Now().Unix()), acc.Username, content, streamID)
+	ws.OnChatMessage(int(time.Now().Unix()), acc.Username, acc.Avatar, content, streamID)
 
 	fmt.Fprintf(w, `{"success": true}`)
 }

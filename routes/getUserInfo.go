@@ -61,8 +61,8 @@ func GetUserInfo(w http.ResponseWriter, r *http.Request, db *mongo.Database) {
 	}
 
 	if me != nil {
-		fmt.Fprintf(w, `{"success": true, "username": "%s", "avatarURL": "%s", "followers": %d, "isLive": %t, "streamName": "%s", "streamURL": "%s", "isFollowing": %t}`, account.Username, account.AvatarURL, followers, account.IsLive, account.StreamName, account.StreamURL, isFollowing)
+		fmt.Fprintf(w, `{"success": true, "username": "%s", "accountID": "%s", "avatar": "%s", "followers": %d, "isLive": %t, "streamName": "%s", "streamURL": "%s", "isFollowing": %t}`, account.Username, account.ID.Hex(), account.Avatar, followers, account.IsLive, account.StreamName, account.StreamURL, isFollowing)
 	} else {
-		fmt.Fprintf(w, `{"success": true, "username": "%s", "avatarURL": "%s", "followers": %d, "isLive": %t, "streamName": "%s", "streamURL": "%s"}`, account.Username, account.AvatarURL, followers, account.IsLive, account.StreamName, account.StreamURL)
+		fmt.Fprintf(w, `{"success": true, "username": "%s", "accountID": "%s", "avatar": "%s", "followers": %d, "isLive": %t, "streamName": "%s", "streamURL": "%s"}`, account.Username, account.ID.Hex(), account.Avatar, followers, account.IsLive, account.StreamName, account.StreamURL)
 	}
 }

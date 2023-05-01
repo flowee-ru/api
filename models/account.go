@@ -8,7 +8,7 @@ type Account struct {
 	Password        string               `bson:"passsword"`
 	Email           string               `bson:"email"`
 	Timestamp       int32                `bson:"timestamp"`
-	AvatarURL       string               `bson:"avatarURL"`
+	Avatar          string               `bson:"avatar"`
 	LastStream      int32                `bson:"lastStream"`
 	LastEmailSend   int32                `bson:"lastEmailSend"`
 	Token           string               `bson:"token"`

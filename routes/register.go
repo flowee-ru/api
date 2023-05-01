@@ -91,7 +91,7 @@ func Register(w http.ResponseWriter, r *http.Request, db *mongo.Database, ctx co
 		Password: string(hash),
 		Email: email,
 		Timestamp: int32(time.Now().Unix()),
-		AvatarURL: "default",
+		Avatar: "default",
 		LastStream: 0,
 		LastEmailSend: 0,
 		Token: utils.GenerateToken(30),
