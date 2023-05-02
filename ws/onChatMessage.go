@@ -11,10 +11,10 @@ import (
 func OnChatMessage(timestamp int, authorName string, avatar string, content string, stream primitive.ObjectID) {
 	for conn, s := range clients {
 		if s == stream {
-			authorName = base64.StdEncoding.EncodeToString([]byte(authorName))
-			content = base64.StdEncoding.EncodeToString([]byte(content))
+			authorNameEncoded := base64.StdEncoding.EncodeToString([]byte(authorName))
+			contentEncoded := base64.StdEncoding.EncodeToString([]byte(content))
 
-			conn.WriteMessage(websocket.TextMessage, []byte(strconv.Itoa(timestamp)+"|"+authorName+"|"+avatar+"|"+content))
+			conn.WriteMessage(websocket.TextMessage, []byte(strconv.Itoa(timestamp)+"|"+authorNameEncoded+"|"+avatar+"|"+contentEncoded))
 		}
 	}
 }
