@@ -29,11 +29,6 @@ func Register(w http.ResponseWriter, r *http.Request, db *mongo.Database, ctx co
 	password := r.FormValue("password")
 	captcha := r.FormValue("captcha")
 
-	mondayHost := "http://localhost:8089"
-	if os.Getenv("MONDAY_HOST") != "" {
-		mondayHost = os.Getenv("MONDAY_HOST")
-	}
-
 	if username == "" || password == "" || email == "" || captcha == "" {
 		w.WriteHeader(http.StatusBadRequest)
 		fmt.Fprintf(w, `{"success": false}`)
@@ -98,7 +93,6 @@ func Register(w http.ResponseWriter, r *http.Request, db *mongo.Database, ctx co
 		VerifyToken: verifyToken,
 		StreamToken: utils.GenerateToken(30),
 		StreamName: username + "'s stream",
-		StreamURL: mondayHost + "/" + id.Hex(),
 		IsLive: false,
 		IsActive: false,
 	})
