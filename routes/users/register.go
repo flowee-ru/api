@@ -17,7 +17,7 @@ import (
 	"gopkg.in/gomail.v2"
 )
 
-func Register(w http.ResponseWriter, r *http.Request, db *mongo.Database) {
+func Register(ctx context.Context, w http.ResponseWriter, r *http.Request, db *mongo.Database) {
 	username := r.FormValue("username")
 	email := r.FormValue("email")
 	password := r.FormValue("password")
@@ -40,13 +40,13 @@ func Register(w http.ResponseWriter, r *http.Request, db *mongo.Database) {
 		return
 	}
 
-	err = db.Collection("accounts").FindOne(context.TODO(), bson.D{primitive.E{Key: "username", Value: username}}).Decode(nil)
+	err = db.Collection("accounts").FindOne(ctx, bson.D{primitive.E{Key: "username", Value: username}}).Decode(nil)
 	if err != mongo.ErrNoDocuments {
 		fmt.Fprintf(w, `{"success": false, "errorCode": 3}`)
 		return
 	}
 
-	err = db.Collection("accounts").FindOne(context.TODO(), bson.D{primitive.E{Key: "email", Value: email}}).Decode(nil)
+	err = db.Collection("accounts").FindOne(ctx, bson.D{primitive.E{Key: "email", Value: email}}).Decode(nil)
 	if err != mongo.ErrNoDocuments {
 		fmt.Fprintf(w, `{"success": false, "errorCode": 4}`)
 		return
@@ -72,7 +72,7 @@ func Register(w http.ResponseWriter, r *http.Request, db *mongo.Database) {
 
 	hash, _ := bcrypt.GenerateFromPassword([]byte(password), 10)
 
-	db.Collection("accounts").InsertOne(context.TODO(), models.Account{
+	db.Collection("accounts").InsertOne(ctx, models.Account{
 		ID: primitive.NewObjectID(),
 		Username: username,
 		Password: string(hash),

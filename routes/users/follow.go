@@ -14,7 +14,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func Follow(w http.ResponseWriter, r *http.Request, db *mongo.Database) {
+func Follow(ctx context.Context, w http.ResponseWriter, r *http.Request, db *mongo.Database) {
 	accountIDHex := mux.Vars(r)["accountID"]
 	token := r.FormValue("token")
 
@@ -26,13 +26,13 @@ func Follow(w http.ResponseWriter, r *http.Request, db *mongo.Database) {
 
 	accountID, _ := primitive.ObjectIDFromHex(accountIDHex)
 
-	account, err := utils.GetAccountFromToken(context.TODO(), db, token)
+	account, err := utils.GetAccountFromToken(ctx, db, token)
 	if err == mongo.ErrNoDocuments {
 		fmt.Fprintf(w, `{"success": false, "errorCode": 1}`)
 		return
 	}
 
-	err = db.Collection("follows").FindOne(context.TODO(), bson.D{
+	err = db.Collection("follows").FindOne(ctx, bson.D{
 		primitive.E{Key: "user1", Value: account.ID},
 		primitive.E{Key: "user2", Value: accountID},
 	}).Decode(nil)
@@ -41,7 +41,7 @@ func Follow(w http.ResponseWriter, r *http.Request, db *mongo.Database) {
 		return
 	}
 
-	db.Collection("follows").InsertOne(context.TODO(), models.Follow{
+	db.Collection("follows").InsertOne(ctx, models.Follow{
 		ID: primitive.NewObjectID(),
 		User1: account.ID,
 		User2: accountID,

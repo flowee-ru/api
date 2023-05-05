@@ -18,7 +18,7 @@ var upgrader = websocket.Upgrader{
 	},
 }
 
-func Ws(w http.ResponseWriter, r *http.Request, db *mongo.Database) {
+func Ws(ctx context.Context, w http.ResponseWriter, r *http.Request, db *mongo.Database) {
 	conn, _ := upgrader.Upgrade(w, r, nil)
 	defer conn.Close()
 
@@ -30,7 +30,7 @@ func Ws(w http.ResponseWriter, r *http.Request, db *mongo.Database) {
 	
 	accountID, _ := primitive.ObjectIDFromHex(accountIDHex)
 
-	err := db.Collection("accounts").FindOne(context.TODO(), bson.D{primitive.E{Key: "_id", Value: accountID}}).Decode(nil)
+	err := db.Collection("accounts").FindOne(ctx, bson.D{primitive.E{Key: "_id", Value: accountID}}).Decode(nil)
 	if err == mongo.ErrNoDocuments {
 		return
 	}

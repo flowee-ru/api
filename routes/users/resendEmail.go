@@ -15,7 +15,7 @@ import (
 	"gopkg.in/gomail.v2"
 )
 
-func ResendEmail(w http.ResponseWriter, r *http.Request, db *mongo.Database) {
+func ResendEmail(ctx context.Context, w http.ResponseWriter, r *http.Request, db *mongo.Database) {
 	email := r.FormValue("email")
 
 	if email == "" {
@@ -25,7 +25,7 @@ func ResendEmail(w http.ResponseWriter, r *http.Request, db *mongo.Database) {
 	}
 
 	var account models.Account
-	err := db.Collection("accounts").FindOne(context.TODO(), bson.D{primitive.E{Key: "email", Value: email}, primitive.E{Key: "isActive", Value: false}}).Decode(&account)
+	err := db.Collection("accounts").FindOne(ctx, bson.D{primitive.E{Key: "email", Value: email}, primitive.E{Key: "isActive", Value: false}}).Decode(&account)
 	if err == mongo.ErrNoDocuments {
 		fmt.Fprintf(w, `{"success": false, "errorCode": 1}`)
 		return
@@ -53,7 +53,7 @@ func ResendEmail(w http.ResponseWriter, r *http.Request, db *mongo.Database) {
 		return
 	}
 
-	db.Collection("accounts").UpdateOne(context.TODO(), bson.D{primitive.E{Key: "email", Value: email}},
+	db.Collection("accounts").UpdateOne(ctx, bson.D{primitive.E{Key: "email", Value: email}},
 	bson.D{primitive.E{
 		Key: "$set", Value: bson.D{primitive.E{
 			Key: "lastEmailSend", Value: int32(time.Now().Unix()),

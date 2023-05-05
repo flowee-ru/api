@@ -12,7 +12,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func Login(w http.ResponseWriter, r *http.Request, db *mongo.Database) {
+func Login(ctx context.Context, w http.ResponseWriter, r *http.Request, db *mongo.Database) {
 	username := r.FormValue("username")
 	password := r.FormValue("password")
 
@@ -23,7 +23,7 @@ func Login(w http.ResponseWriter, r *http.Request, db *mongo.Database) {
 	}
 
 	var account models.Account
-	err := db.Collection("accounts").FindOne(context.TODO(), bson.D{primitive.E{Key: "username", Value: username}, primitive.E{Key: "isActive", Value: true}}).Decode(&account)
+	err := db.Collection("accounts").FindOne(ctx, bson.D{primitive.E{Key: "username", Value: username}, primitive.E{Key: "isActive", Value: true}}).Decode(&account)
 	if err == mongo.ErrNoDocuments {
 		fmt.Fprintf(w, `{"success": false, "errorCode": 1}`)
 		return

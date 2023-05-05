@@ -11,7 +11,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func VerifyToken(w http.ResponseWriter, r *http.Request, db *mongo.Database) {
+func VerifyToken(ctx context.Context, w http.ResponseWriter, r *http.Request, db *mongo.Database) {
 	token := r.FormValue("token")
 
 	if token == "" {
@@ -21,7 +21,7 @@ func VerifyToken(w http.ResponseWriter, r *http.Request, db *mongo.Database) {
 	}
 
 	var account models.Account
-	err := db.Collection("accounts").FindOne(context.TODO(), bson.D{primitive.E{Key: "token", Value: token}}).Decode(&account)
+	err := db.Collection("accounts").FindOne(ctx, bson.D{primitive.E{Key: "token", Value: token}}).Decode(&account)
 	if err == mongo.ErrNoDocuments {
 		fmt.Fprintf(w, `{"success": false, "errorCode": 1}`)
 		return

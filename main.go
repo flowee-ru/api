@@ -15,6 +15,8 @@ import (
 	"github.com/joho/godotenv"
 )
 
+var ctx = context.Background()
+
 func main() {
 	godotenv.Load()
 
@@ -35,57 +37,62 @@ func main() {
 	// users
 	router.HandleFunc("/users/login", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-		routes_users.Login(w, r, db)
+		routes_users.Login(ctx, w, r, db)
 	}).Methods("POST")
 
 	router.HandleFunc("/users/register", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-		routes_users.Register(w, r, db)
+		routes_users.Register(ctx, w, r, db)
 	}).Methods("POST")
 
 	router.HandleFunc("/users/verifyAccount", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-		routes_users.VerifyAccount(w, r, db)
+		routes_users.VerifyAccount(ctx, w, r, db)
 	}).Methods("POST")
 
 	router.HandleFunc("/users/verifyToken", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-		routes_users.VerifyToken(w, r, db)
+		routes_users.VerifyToken(ctx, w, r, db)
 	}).Methods("POST")
 
 	router.HandleFunc("/users/resendEmail", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-		routes_users.ResendEmail(w, r, db)
+		routes_users.ResendEmail(ctx, w, r, db)
 	}).Methods("POST")
 
 	router.HandleFunc("/users/{accountID}/follow", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-		routes_users.Follow(w, r, db)
+		routes_users.Follow(ctx, w, r, db)
 	}).Methods("POST")
 
 	router.HandleFunc("/users/{accountID}/unfollow", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-		routes_users.Unfollow(w, r, db)
+		routes_users.Unfollow(ctx, w, r, db)
 	}).Methods("POST")
 
 	router.HandleFunc("/users/username/{username}", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-		routes_users.GetInfoByUsername(w, r, db)
+		routes_users.GetInfoByUsername(ctx, w, r, db)
 	}).Methods("GET")
 
 	router.HandleFunc("/users/{accountID}", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-		routes_users.GetInfo(w, r, db)
+		routes_users.GetInfo(ctx, w, r, db)
+	}).Methods("GET")
+
+	router.HandleFunc("/users", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		routes_users.GetUsers(ctx, w, r, db)
 	}).Methods("GET")
 
 	// chat
 	router.HandleFunc("/users/{accountID}/chat/send", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-		routes_chat.SendMessage(w, r, db)
+		routes_chat.SendMessage(ctx, w, r, db)
 	}).Methods("POST")
 
 	router.HandleFunc("/users/{accountID}/chat/ws", func(w http.ResponseWriter, r *http.Request) {
-		ws.Ws(w, r, db)
+		ws.Ws(ctx, w, r, db)
 	})
 
 	http.Handle("/", router)

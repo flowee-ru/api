@@ -13,7 +13,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func SendMessage(w http.ResponseWriter, r *http.Request, db *mongo.Database) {
+func SendMessage(ctx context.Context, w http.ResponseWriter, r *http.Request, db *mongo.Database) {
 	accountIDHex := mux.Vars(r)["accountID"]
 	token := r.FormValue("token")
 	content := r.FormValue("content")
