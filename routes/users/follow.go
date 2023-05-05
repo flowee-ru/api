@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/gorilla/mux"
 	"github.com/flowee-ru/flowee-api/models"
 	"github.com/flowee-ru/flowee-api/utils"
 	"go.mongodb.org/mongo-driver/bson"
@@ -13,31 +14,25 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func Follow(w http.ResponseWriter, r *http.Request, db *mongo.Database, ctx context.Context) {
-	if r.Method != http.MethodPost {
-		w.WriteHeader(http.StatusMethodNotAllowed)
-		fmt.Fprintf(w, `{"success": false}`)
-		return
-	}
-
+func Follow(w http.ResponseWriter, r *http.Request, db *mongo.Database) {
+	accountIDHex := mux.Vars(r)["accountID"]
 	token := r.FormValue("token")
-	targetIDHex := r.FormValue("targetID")
 
-	if token == "" || targetIDHex == "" || !primitive.IsValidObjectID(targetIDHex) {
+	if token == "" || accountIDHex == "" || !primitive.IsValidObjectID(accountIDHex) {
 		w.WriteHeader(http.StatusBadRequest)
 		fmt.Fprintf(w, `{"success": false}`)
 		return
 	}
 
-	accountID, _ := primitive.ObjectIDFromHex(targetIDHex)
+	accountID, _ := primitive.ObjectIDFromHex(accountIDHex)
 
-	account, err := utils.GetAccountFromToken(ctx, db, token)
+	account, err := utils.GetAccountFromToken(context.TODO(), db, token)
 	if err == mongo.ErrNoDocuments {
 		fmt.Fprintf(w, `{"success": false, "errorCode": 1}`)
 		return
 	}
 
-	err = db.Collection("follows").FindOne(ctx, bson.D{
+	err = db.Collection("follows").FindOne(context.TODO(), bson.D{
 		primitive.E{Key: "user1", Value: account.ID},
 		primitive.E{Key: "user2", Value: accountID},
 	}).Decode(nil)
@@ -46,7 +41,7 @@ func Follow(w http.ResponseWriter, r *http.Request, db *mongo.Database, ctx cont
 		return
 	}
 
-	db.Collection("follows").InsertOne(ctx, models.Follow{
+	db.Collection("follows").InsertOne(context.TODO(), models.Follow{
 		ID: primitive.NewObjectID(),
 		User1: account.ID,
 		User2: accountID,

@@ -7,22 +7,15 @@ import (
 
 	"github.com/flowee-ru/flowee-api/models"
 	"github.com/flowee-ru/flowee-api/utils"
+	"github.com/gorilla/mux"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-var ctx = context.TODO()
-
-func GetUserInfo(w http.ResponseWriter, r *http.Request, db *mongo.Database) {
-	if r.Method != http.MethodGet {
-		w.WriteHeader(http.StatusMethodNotAllowed)
-		fmt.Fprintf(w, `{"success": false}`)
-		return
-	}
-
-	username := r.FormValue("username")
+func GetInfoByUsername(w http.ResponseWriter, r *http.Request, db *mongo.Database) {
 	token := r.FormValue("token")
+	username := mux.Vars(r)["username"]
 
 	if username == "" {
 		w.WriteHeader(http.StatusBadRequest)
@@ -32,20 +25,20 @@ func GetUserInfo(w http.ResponseWriter, r *http.Request, db *mongo.Database) {
 
 	var me *models.Account = nil
 	if token != "" {
-		acc, err := utils.GetAccountFromToken(ctx, db, token)
+		acc, err := utils.GetAccountFromToken(context.TODO(), db, token)
 		if err != mongo.ErrNoDocuments {
 			me = acc
 		}
 	}
 
 	var account models.Account
-	err := db.Collection("accounts").FindOne(ctx, bson.D{primitive.E{Key: "username", Value: username}, primitive.E{Key: "isActive", Value: true}}).Decode(&account)
+	err := db.Collection("accounts").FindOne(context.TODO(), bson.D{primitive.E{Key: "username", Value: username}, primitive.E{Key: "isActive", Value: true}}).Decode(&account)
 	if err == mongo.ErrNoDocuments {
 		fmt.Fprintf(w, `{"success": false, "errorCode": 1}`)
 		return
 	}
 
-	followers, err := db.Collection("follows").CountDocuments(ctx, bson.D{primitive.E{Key: "user2", Value: account.ID}})
+	followers, err := db.Collection("follows").CountDocuments(context.TODO(), bson.D{primitive.E{Key: "user2", Value: account.ID}})
 	if err != nil {
 		fmt.Fprintf(w, `{"success": false, "errorCode": 1}`)
 		return
@@ -54,7 +47,7 @@ func GetUserInfo(w http.ResponseWriter, r *http.Request, db *mongo.Database) {
 	isFollowing := false
 	if me != nil {
 		var follow models.Follow
-		err := db.Collection("follows").FindOne(ctx, bson.D{primitive.E{Key: "user1", Value: me.ID}, primitive.E{Key: "user2", Value: account.ID}}).Decode(&follow)
+		err := db.Collection("follows").FindOne(context.TODO(), bson.D{primitive.E{Key: "user1", Value: me.ID}, primitive.E{Key: "user2", Value: account.ID}}).Decode(&follow)
 		if err != mongo.ErrNoDocuments {
 			isFollowing = true
 		}
