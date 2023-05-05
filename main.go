@@ -30,70 +30,61 @@ func main() {
 
 	router := mux.NewRouter()
 
+	router.Use(setupCors)
+
 	// users
 	router.HandleFunc("/users/login", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-		w.Header().Set("Access-Control-Allow-Origin", "*")
 		routes_users.Login(w, r, db)
 	}).Methods("POST")
 
 	router.HandleFunc("/users/register", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-		w.Header().Set("Access-Control-Allow-Origin", "*")
 		routes_users.Register(w, r, db)
 	}).Methods("POST")
 
 	router.HandleFunc("/users/verifyAccount", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-		w.Header().Set("Access-Control-Allow-Origin", "*")
 		routes_users.VerifyAccount(w, r, db)
 	}).Methods("POST")
 
 	router.HandleFunc("/users/verifyToken", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-		w.Header().Set("Access-Control-Allow-Origin", "*")
 		routes_users.VerifyToken(w, r, db)
 	}).Methods("POST")
 
 	router.HandleFunc("/users/resendEmail", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-		w.Header().Set("Access-Control-Allow-Origin", "*")
 		routes_users.ResendEmail(w, r, db)
 	}).Methods("POST")
 
 	router.HandleFunc("/users/{accountID}/follow", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-		w.Header().Set("Access-Control-Allow-Origin", "*")
 		routes_users.Follow(w, r, db)
 	}).Methods("POST")
 
 	router.HandleFunc("/users/{accountID}/unfollow", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-		w.Header().Set("Access-Control-Allow-Origin", "*")
 		routes_users.Unfollow(w, r, db)
 	}).Methods("POST")
 
 	router.HandleFunc("/users/username/{username}", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-		w.Header().Set("Access-Control-Allow-Origin", "*")
 		routes_users.GetInfoByUsername(w, r, db)
 	}).Methods("GET")
 
 	router.HandleFunc("/users/{accountID}", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-		w.Header().Set("Access-Control-Allow-Origin", "*")
 		routes_users.GetInfo(w, r, db)
 	}).Methods("GET")
 
 	// chat
 	router.HandleFunc("/users/{accountID}/chat/send", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-		w.Header().Set("Access-Control-Allow-Origin", "*")
 		routes_chat.SendMessage(w, r, db)
 	}).Methods("POST")
 
 	router.HandleFunc("/users/{accountID}/chat/ws", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Access-Control-Allow-Origin", "*")
 		ws.Ws(w, r, db)
 	})
 
@@ -101,4 +92,11 @@ func main() {
 
 	log.Println("Starting server on port " + port)
 	http.ListenAndServe(":" + port, nil)
+}
+
+func setupCors(h http.Handler) http.Handler {
+    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+        w.Header().Set("Access-Control-Allow-Origin", "*")
+        h.ServeHTTP(w, r)
+    })
 }
