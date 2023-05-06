@@ -15,6 +15,7 @@ type Account struct {
 	VerifyToken     string               `bson:"verifyToken"`
 	StreamToken     string               `bson:"streamToken"`
 	StreamName      string               `bson:"streamName"`
+	Viewers         int32                `bson:"viewers"`
 	IsLive          bool                 `bson:"isLive"`
 	IsActive        bool                 `bson:"isActive"`
 }

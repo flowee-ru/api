@@ -85,6 +85,7 @@ func Register(ctx context.Context, w http.ResponseWriter, r *http.Request, db *m
 		VerifyToken: verifyToken,
 		StreamToken: utils.GenerateToken(30),
 		StreamName: username + "'s stream",
+		Viewers: 0,
 		IsLive: false,
 		IsActive: false,
 	})

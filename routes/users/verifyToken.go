@@ -27,5 +27,5 @@ func VerifyToken(ctx context.Context, w http.ResponseWriter, r *http.Request, db
 		return
 	}
 
-	fmt.Fprintf(w, `{"success": true, "username": "%s"}`, account.Username)
+	fmt.Fprintf(w, `{"success": true, "username": "%s", "avatar": "%s"}`, account.Username, account.Avatar)
 }

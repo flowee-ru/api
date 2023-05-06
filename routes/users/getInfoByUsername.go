@@ -54,8 +54,8 @@ func GetInfoByUsername(ctx context.Context, w http.ResponseWriter, r *http.Reque
 	}
 
 	if me != nil {
-		fmt.Fprintf(w, `{"success": true, "username": "%s", "accountID": "%s", "avatar": "%s", "followers": %d, "isLive": %t, "streamName": "%s", "isFollowing": %t}`, account.Username, account.ID.Hex(), account.Avatar, followers, account.IsLive, account.StreamName, isFollowing)
+		fmt.Fprintf(w, `{"success": true, "username": "%s", "accountID": "%s", "avatar": "%s", "followers": %d, "isLive": %t, "streamName": "%s", "viewers": %d, "isFollowing": %t}`, account.Username, account.ID.Hex(), account.Avatar, followers, account.IsLive, account.StreamName, account.Viewers, isFollowing)
 	} else {
-		fmt.Fprintf(w, `{"success": true, "username": "%s", "accountID": "%s", "avatar": "%s", "followers": %d, "isLive": %t, "streamName": "%s"}`, account.Username, account.ID.Hex(), account.Avatar, followers, account.IsLive, account.StreamName)
+		fmt.Fprintf(w, `{"success": true, "username": "%s", "accountID": "%s", "avatar": "%s", "followers": %d, "isLive": %t, "streamName": "%s", "viewers": %d}`, account.Username, account.ID.Hex(), account.Avatar, followers, account.IsLive, account.StreamName, account.Viewers)
 	}
 }
