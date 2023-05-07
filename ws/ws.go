@@ -45,9 +45,16 @@ func Ws(ctx context.Context, w http.ResponseWriter, r *http.Request, db *mongo.D
 	defer delete(clients, conn)
 
 	for {
-		_, _, err := conn.ReadMessage()
+		mt, p, err := conn.ReadMessage()
 		if err != nil {
 			return
+		}
+
+		if string(p) == "ping" {
+			err := conn.WriteMessage(mt, []byte("pong"))
+			if err != nil {
+				return
+			}
 		}
 	}
 }
