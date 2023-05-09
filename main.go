@@ -121,7 +121,7 @@ func main() {
 	router.HandleFunc("/settings", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		routes_settings.UpdateSettings(ctx, w, r, db)
-	}).Methods("PATCH")
+	}).Methods("POST")
 
 	// chat
 	router.HandleFunc("/users/{accountID}/chat/send", func(w http.ResponseWriter, r *http.Request) {
