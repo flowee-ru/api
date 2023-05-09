@@ -1,10 +1,11 @@
-package routes
+package users
 
 import (
 	"context"
 	"fmt"
 	"net/http"
 	"os"
+	"regexp"
 	"strconv"
 	"time"
 
@@ -16,6 +17,15 @@ import (
 	"golang.org/x/crypto/bcrypt"
 	"gopkg.in/gomail.v2"
 )
+
+func contains(s []string, e string) bool {
+    for _, a := range s {
+        if a == e {
+            return true
+        }
+    }
+    return false
+}
 
 func Register(ctx context.Context, w http.ResponseWriter, r *http.Request, db *mongo.Database) {
 	username := r.FormValue("username")
@@ -34,21 +44,37 @@ func Register(ctx context.Context, w http.ResponseWriter, r *http.Request, db *m
 		return
 	}
 
+	test, _ := regexp.MatchString("^\\s*$", username)
+	if test {
+		fmt.Fprintf(w, `{"success": false, "errorCode": 1}`)
+		return
+	}
+
+	badUsernames := []string {
+		"settings",
+		"verify",
+	}
+
+	if contains(badUsernames, username) {
+		fmt.Fprintf(w, `{"success": false, "errorCode": 2}`)
+		return
+	}
+
 	check, err := utils.VerifyCaptcha(captcha)
 	if err != nil || !check {
-		fmt.Fprintf(w, `{"success": false, "errorCode": 2}`)
+		fmt.Fprintf(w, `{"success": false, "errorCode": 3}`)
 		return
 	}
 
 	err = db.Collection("accounts").FindOne(ctx, bson.D{primitive.E{Key: "username", Value: username}}).Decode(nil)
 	if err != mongo.ErrNoDocuments {
-		fmt.Fprintf(w, `{"success": false, "errorCode": 3}`)
+		fmt.Fprintf(w, `{"success": false, "errorCode": 4}`)
 		return
 	}
 
 	err = db.Collection("accounts").FindOne(ctx, bson.D{primitive.E{Key: "email", Value: email}}).Decode(nil)
 	if err != mongo.ErrNoDocuments {
-		fmt.Fprintf(w, `{"success": false, "errorCode": 4}`)
+		fmt.Fprintf(w, `{"success": false, "errorCode": 5}`)
 		return
 	}
 
@@ -66,7 +92,7 @@ func Register(ctx context.Context, w http.ResponseWriter, r *http.Request, db *m
 
 	err = dialer.DialAndSend(mail)
 	if err != nil {
-		fmt.Fprintf(w, `{"success": false, "errorCode": 5}`)
+		fmt.Fprintf(w, `{"success": false, "errorCode": 6}`)
 		return
 	}
 
