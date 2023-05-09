@@ -46,7 +46,13 @@ func Register(ctx context.Context, w http.ResponseWriter, r *http.Request, db *m
 
 	test, _ := regexp.MatchString("^\\s*$", username)
 	if test {
-		fmt.Fprintf(w, `{"success": false, "errorCode": 1}`)
+		fmt.Fprintf(w, `{"success": false, "errorCode": 2}`)
+		return
+	}
+
+	test, _ = regexp.MatchString("^[a-zA-Z0-9_-]*$", username)
+	if !test {
+		fmt.Fprintf(w, `{"success": false, "errorCode": 2}`)
 		return
 	}
 
