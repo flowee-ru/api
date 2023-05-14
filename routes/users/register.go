@@ -18,16 +18,7 @@ import (
 	"gopkg.in/gomail.v2"
 )
 
-func contains(s []string, e string) bool {
-    for _, a := range s {
-        if a == e {
-            return true
-        }
-    }
-    return false
-}
-
-func Register(ctx context.Context, w http.ResponseWriter, r *http.Request, db *mongo.Database) {
+func Register(w http.ResponseWriter, r *http.Request, db *mongo.Database) {
 	username := r.FormValue("username")
 	email := r.FormValue("email")
 	password := r.FormValue("password")
@@ -44,13 +35,7 @@ func Register(ctx context.Context, w http.ResponseWriter, r *http.Request, db *m
 		return
 	}
 
-	test, _ := regexp.MatchString("^\\s*$", username)
-	if test {
-		fmt.Fprintf(w, `{"success": false, "errorCode": 2}`)
-		return
-	}
-
-	test, _ = regexp.MatchString("^[a-zA-Z0-9_-]*$", username)
+	test, _ := regexp.MatchString("^[a-zA-Z0-9_-]*$", username)
 	if !test {
 		fmt.Fprintf(w, `{"success": false, "errorCode": 2}`)
 		return
@@ -61,10 +46,12 @@ func Register(ctx context.Context, w http.ResponseWriter, r *http.Request, db *m
 		"verify",
 	}
 
-	if contains(badUsernames, username) {
-		fmt.Fprintf(w, `{"success": false, "errorCode": 2}`)
-		return
-	}
+	for _, a := range badUsernames {
+        if a == username {
+			fmt.Fprintf(w, `{"success": false, "errorCode": 2}`)
+			return
+        }
+    }
 
 	check, err := utils.VerifyCaptcha(captcha)
 	if err != nil || !check {
@@ -72,13 +59,13 @@ func Register(ctx context.Context, w http.ResponseWriter, r *http.Request, db *m
 		return
 	}
 
-	err = db.Collection("accounts").FindOne(ctx, bson.D{primitive.E{Key: "username", Value: username}}).Decode(nil)
+	err = db.Collection("accounts").FindOne(context.TODO(), bson.D{primitive.E{Key: "username", Value: username}}).Decode(nil)
 	if err != mongo.ErrNoDocuments {
 		fmt.Fprintf(w, `{"success": false, "errorCode": 4}`)
 		return
 	}
 
-	err = db.Collection("accounts").FindOne(ctx, bson.D{primitive.E{Key: "email", Value: email}}).Decode(nil)
+	err = db.Collection("accounts").FindOne(context.TODO(), bson.D{primitive.E{Key: "email", Value: email}}).Decode(nil)
 	if err != mongo.ErrNoDocuments {
 		fmt.Fprintf(w, `{"success": false, "errorCode": 5}`)
 		return
@@ -90,8 +77,8 @@ func Register(ctx context.Context, w http.ResponseWriter, r *http.Request, db *m
 	mail := gomail.NewMessage()
 	mail.SetHeader("From", os.Getenv("SMTP_USER"))
 	mail.SetHeader("To", email)
-	mail.SetHeader("Subject", "Verify your account on Flowee")
-	mail.SetBody("text/html", `<div align="center">Hello ` + username + `! Please follow this link to activate your account on Flowee:<br><a href="` + verifyLink + `">` + verifyLink + `</div>`)
+	mail.SetHeader("Subject", "Подтверждение аккаунта на Flowee")
+	mail.SetBody("text/html", `<div align="center">Здравствуйте, ` + username + `! Чтобы подтвердить аккаунт на Flowee, перейдите по ссылке:<br><a href="` + verifyLink + `">` + verifyLink + `</div>`)
 
 	smtpPort, _ := strconv.Atoi(os.Getenv("SMTP_PORT"))
 	dialer := gomail.NewDialer(os.Getenv("SMTP_HOST"), smtpPort, os.Getenv("SMTP_USER"), os.Getenv("SMTP_PASSWORD"))
@@ -104,7 +91,7 @@ func Register(ctx context.Context, w http.ResponseWriter, r *http.Request, db *m
 
 	hash, _ := bcrypt.GenerateFromPassword([]byte(password), 10)
 
-	db.Collection("accounts").InsertOne(ctx, models.Account{
+	db.Collection("accounts").InsertOne(context.TODO(), models.Account{
 		ID: primitive.NewObjectID(),
 		Username: username,
 		Password: string(hash),
